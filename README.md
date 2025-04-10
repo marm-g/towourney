@@ -1,25 +1,54 @@
-# What the heck is this?
-bracket website, wip
+# React + TypeScript + Vite
 
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-# Development
+Currently, two official plugins are available:
 
-## Pocketbase
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-There are two methods for running the database backend solution, Pocketbase.
+## Expanding the ESLint configuration
 
-### Bare Metal
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-Obtain a pocketbase executable for your specific OS and architecture: https://pocketbase.io/docs/
-Extract the executable, and place it in the `towourney/pb` directory.  From that directory, simply run `./pocketbase serve` and visit the Admin UI at `localhost:8090/_/` to get started.  Migrations can be created easily from this directory as well, see https://pocketbase.io/docs/js-migrations/ for examples and usage.
-
-### Docker
-
-Run these commands from the `towourney` parent directory:
-
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
-docker build -f Dockerfile -t pocketbase .
-docker run -d --name pocketbase -p 8090:8080 pocketbase
-```
 
-When the container is ran, whatever migrations were present in this repository will be copied over to the container and applied on startup.
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default tseslint.config({
+  plugins: {
+    // Add the react-x and react-dom plugins
+    'react-x': reactX,
+    'react-dom': reactDom,
+  },
+  rules: {
+    // other rules...
+    // Enable its recommended typescript rules
+    ...reactX.configs['recommended-typescript'].rules,
+    ...reactDom.configs.recommended.rules,
+  },
+})
+```
